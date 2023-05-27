@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Response
 from flask_restful import Api, Resource, reqparse
 from DatabaseConnector import insert_to_db, select_from_db
 
@@ -20,7 +20,7 @@ class Register(Resource):
         info = select_from_db(query)
         print(info)
         if len(info) != 0:
-            return 'already used'
+            return Response('already used', status=409)
         query = f'''INSERT INTO user(username, email, password_hash, role)
                 VALUES (
                 "{data['username']}",
@@ -29,7 +29,7 @@ class Register(Resource):
                 "{data['role']}"
                 );'''
         insert_to_db(query)
-        return 'ok'
+        return Response('ok', status=200)
 
 
 class Server(Resource):
@@ -43,8 +43,8 @@ class Server(Resource):
         info = select_from_db(query)
         print(info)
         if len(info) != 1 or len(info[0]) < 4 or info[0][3] != data['password_hash']:
-            return 'error'
-        return 'ok'
+            return Response('bad users info', status=409)
+        return Response('ok', status=200)
 
 
 api.add_resource(Register, "/api/register")

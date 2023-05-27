@@ -47,10 +47,12 @@ def registration():
     }
     res = requests.post('http://localhost:3000/api/register', json=data)
     print(res.text)
-    if res.text == '"ok"':
+    if res.status_code == 200:
         print('Записал вас в книгу!')
-    else:
+    elif res.status_code == 409:
         print('Кажется вы уже записаны!')
+    else:
+        print('Непредвиденные трудности!')
 
 
 def login():
@@ -63,10 +65,12 @@ def login():
         'password_hash': hashlib.sha256(password.encode()).hexdigest(),
     }
     res = requests.post('http://localhost:3000/api/login', json=data)
-    if res.text == '"ok"':
+    if res.status_code == 200:
         print('Прохрдите, милсдарь! (Успешно)')
-    else:
+    elif res.status_code == 409:
         print('Нет таких в книге! (Неверный логин/пароль)')
+    else:
+        print('Непредвиденные трудности!')
 
 
 while True:
